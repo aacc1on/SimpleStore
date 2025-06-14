@@ -1,0 +1,209 @@
+# SimpleStore API Tests
+
+Այս բաժինը պարունakcում է SimpleStore API-ի համար համապարփակ տեստեր axios-ի միջոցով:
+
+## Տեղադրում և Կարգավորում
+
+### Նախապայմաններ
+- Node.js (>= 14.0.0)
+- npm
+- SimpleStore server-ը պետք է աշխատի
+
+### Տեղադրում
+```bash
+npm install axios
+```
+
+## Օգտագործում
+
+### Լիարժեք տեստային փաթեթի գործարկում
+```bash
+node simplestore-tests.js
+```
+
+### Առանձին տեստերի գործարկում
+
+#### Authentication տեստեր
+```bash
+npm run test:auth
+```
+
+#### Product endpoints տեստեր
+```bash
+npm run test:products
+```
+
+#### User management տեստեր
+```bash
+npm run test:users
+```
+
+#### Role-based authorization տեստեր
+```bash
+npm run test:auth-roles
+```
+
+#### Edge cases տեստեր
+```bash
+npm run test:edge-cases
+```
+
+#### Performance տեստեր
+```bash
+npm run test:performance
+```
+
+## Տեստային սցենարներ
+
+### 1. Authentication տեստեր
+- ✅ Admin մուտք
+- ✅ Regular user մուտք
+- ✅ Սխալ credentials-ներով մուտք
+- ✅ Բացակայող credentials-ներ
+
+### 2. Product Management տեստեր
+- ✅ Բոլոր ապրանքների ցուցակ (հանրային)
+- ✅ Ապրանք ավելացնել (admin իրավունքներով)
+- ✅ Ապրանք ավելացնել առանց authentication-ի
+- ✅ Ապրանք ավելացնել regular user-ով
+- ✅ Սխալ տվյալներով ապրանք ավելացնել
+
+### 3. User Management տեստեր
+- ✅ Բոլոր օգտվողների ցուցակ (admin)
+- ✅ Բոլոր օգտվողների ցուցակ (regular user)
+- ✅ Բոլոր օգտվողների ցուցակ առանց authentication-ի
+
+### 4. Authorization տեստեր
+- ✅ Սխալ JWT token
+- ✅ Token առանց Bearer prefix-ի
+- ✅ Բացակայող Authorization header
+
+### 5. Edge Cases տեստեր
+- ✅ Մեծ payload
+- ✅ SQL Injection պաշտպանություն
+- ✅ XSS պաշտպանություն
+
+### 6. Performance տեստեր
+- ✅ Մի քանի միաժամանակյա requests
+
+## Կարգավորումներ
+
+### Server URL փոփոխություն
+Եթե ձեր server-ը աշխատում է այլ port-ի վրա, փոխեք `BASE_URL` փոփոխականը:
+
+```javascript
+const BASE_URL = 'http://localhost:YOUR_PORT';
+```
+
+### Test Data փոփոխություն
+Եթե ունեք այլ test users, փոխեք `testAdmin` և `testUser` օբյեկտները:
+
+```javascript
+const testAdmin = {
+    username: 'your_admin_username',
+    password: 'your_admin_password'
+};
+
+const testUser = {
+    username: 'your_user_username',
+    password: 'your_user_password'
+};
+```
+
+## Գունավոր Console Output
+
+Տեստերը օգտագործում են գունավոր console output՝ հեշտ ընկալման համար:
+- 🟢 Կանաչ: Հաջող տեստեր
+- 🔴 Կարմիր: Անհաջող տեստեր
+- 🟡 Դեղին: Հավելյալ տեղեկություններ
+- 🔵 Կապույտ: Բաժինների վերնագրեր
+
+## Error Handling
+
+Տեստերը ապահովում են:
+- Մանրամասն error messages
+- HTTP status codes ստուգում
+- Network errors handling
+- Server availability ստուգում
+
+## Օրինակ Output
+
+```
+SimpleStore API Test Suite
+Testing against: http://localhost:3000
+
+✓ Server is running at http://localhost:3000
+
+Starting SimpleStore API Tests...
+
+=== Testing Authentication ===
+✓ PASSED - Admin Login
+   Token received: Yes
+✓ PASSED - Regular User Login
+   Token received: Yes
+✓ PASSED - Invalid Login
+   Status: 401, Message: Invalid credentials
+✓ PASSED - Missing Credentials
+   Status: 400
+
+=== Testing Product Endpoints ===
+✓ PASSED - Get All Products (Public)
+   Products count: 5
+✓ PASSED - Add Product (Admin)
+   Product added: Test Product
+✓ PASSED - Add Product (No Auth)
+   Status: 401
+✓ PASSED - Add Product (Regular User)
+   Status: 403 - Access should be forbidden
+✓ PASSED - Add Product (Invalid Data)
+   Status: 400
+
+🎉 Test suite execution completed!
+```
+
+## Troubleshooting
+
+### Server չի աշխատում
+```
+❌ Server is not running at http://localhost:3000
+Please start your SimpleStore server first.
+```
+**Լուծում**: Նախ գործարկեք ձեր SimpleStore server-ը:
+
+### Authentication errors
+Եթե authentication տեստերը ձախողվում են, ստուգեք:
+- `users.json` ֆայլում admin և user credentials-ները
+- JWT secret key-ի համապատասխանությունը
+- bcrypt password hashing-ը
+
+### Network errors
+- Ստուգեք server-ի port-ը
+- Ստուգեք firewall settings-ները
+- Ստուգեք network connectivity-ը
+
+## Ընդլայնում
+
+Կարող եք ավելացնել նոր տեստեր՝ օրինակ:
+- PUT/PATCH requests-ների համար
+- DELETE requests-ների համար
+- File upload functionality-ի համար
+- Pagination-ի համար
+- Search functionality-ի համար
+
+## Օրինակ նոր տեստ ավելացնելու համար:
+
+```javascript
+async testDeleteProduct() {
+    console.log('=== Testing Product Deletion ===');
+    
+    try {
+        const response = await makeAuthenticatedRequest('DELETE', '/products/1', null, adminToken);
+        logTest('Delete Product (Admin)', 
+            response.status === 200, 
+            'Product successfully deleted'
+        );
+    } catch (error) {
+        logTest('Delete Product (Admin)', false, error.message);
+    }
+}
+```

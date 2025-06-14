@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleStore - Modern E-commerce</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .auth-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .products-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e1e5e9;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .admin-controls {
+            background: rgba(255, 248, 220, 0.9);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ SimpleStore</h1>
+            <p>Modern E-commerce Platform with Advanced Features</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div id="authSection" class="auth-section">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span id="loginLoader" class="loading hidden"></span>
+                    Login
+                </button>
+            </form>
+
+            <form id="registerForm" class="hidden">
+                <div class="form-group">
+                    <label for="registerUsername">Username</label>
+                    <input type="text" id="registerUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span id="registerLoader" class="loading hidden"></span>
+                    Register
+                </button>
+            </form>
+        </div>
+
+        <div id="userSection" class="hidden">
+            <div class="user-info">
+                <h3>Welcome, <span id="userName"></span>! 👋</h3>
+                <p>Role: <span id="userRole"></span></p>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+
+            <div id="adminControls" class="admin-controls hidden">
+                <h3>🔧 Admin Controls</h3>
+                <form id="productForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Price ($)</label>
+                            <input type="number" id="productPrice" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productCategory">Category</label>
+                            <input type="text" id="productCategory">
+                        </div>
+                        <div class="form-group">
+                            <label for="productStock">Stock</label>
+                            <input type="number" id="productStock" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">Description</label>
+                        <input type="text" id="productDescription">
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <span id="productLoader" class="loading hidden"></span>
+                        Add Product
+                    </button>
+                </form>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="productCount">0</div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="categoryCount">0</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalValue">$0</div>
+                    <div class="stat-label">Total Value</div>
+                </div>
+            </div>
+
+            <div class="products-section">
+                <div class="section-title">
+                    🛒 Products
+                    <button onclick="loadProducts()" class="btn btn-secondary">
+                        <span id="productsLoader" class="loading hidden"></span>
+                        Refresh
+                    </button>
+                </div>
+                <div id="productsGrid" class="products-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let currentUser = null;
+        let authToken = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            // Try to restore session
+            const savedToken = sessionStorage.getItem('authToken');
+            if (savedToken) {
+                authToken = savedToken;
+                verifyToken();
+            }
+        });
+
+        function setupEventListeners() {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            document.getElementById('productForm').addEventListener('submit', handleAddProduct);
+        }
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.auth-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Toggle forms
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const loader = document.getElementById('loginLoader');
+            loader.classList.remove('hidden');
+
+            try {
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+
+                const response = await axios.post(`${API_BASE}/auth/login`, {
+                    username,
+                    password
+                });
+
+                authToken = response.data.token;
+                currentUser = response.data.user;
+                
+                sessionStorage.setItem('authToken', authToken);
+                
+                showSuccess('Login successful! Welcome back! 🎉');
+                showUserSection();
+                loadProducts();
+
+            } catch (error) {
+                showError(error.response?.data?.error || 'Login failed');
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const loader = document.getElementById('registerLoader');
+            loader.classList.remove('hidden');
+
+            try {
+                const username = document.getElementById('registerUsername').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+
+                await axios.post(`${API_BASE}/auth/register`, {
+                    username,
+                    email,
+                    password
+                });
+
+                showSuccess('Registration successful! Please login. ✅');
+                switchTab('login');
+                
+                // Clear form
+                document.getElementById('registerForm').reset();
+
+            } catch (error) {
+                showError(error.response?.data?.error || 'Registration failed');
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        async function verifyToken() {
+            try {
+                const response = await axios.get(`${API_BASE}/users/profile`, {
+                    headers: { Authorization: `Bearer ${authToken}` }
+                });
+                
+                currentUser = response.data;
+                showUserSection();
+                loadProducts();
+            } catch (error) {
+                logout();
+            }
+        }
+
+        function showUserSection() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            
+            document.getElementById('userName').textContent = currentUser.username;
+            document.getElementById('userRole').textContent = currentUser.role;
+            
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminControls').classList.remove('hidden');
+            }
+        }
+
+        async function loadProducts() {
+            const loader = document.getElementById('productsLoader');
+            loader.classList.remove('hidden');
+
+            try {
+                const response = await axios.get(`${API_BASE}/products`);
+                const products = response.data.products;
+                
+                displayProducts(products);
+                updateStats(products);
+                
+            } catch (error) {
+                showError('Failed to load products');
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function displayProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            
+            if (products.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1 / -1;">No products available yet. 📦</p>';
+                return;
+            }
+
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-description">${product.description || 'No description'}</div>
+                    <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                    <div class="product-meta">
+                        <span>📦 Stock: ${product.stock}</span>
+                        <span>🏷️ ${product.category || 'Uncategorized'}</span>
+                    </div>
+                    ${currentUser?.role === 'admin' ? `
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button onclick="editProduct(${product.id})" class="btn btn-secondary" style="flex: 1; padding: 8px 12px; font-size: 14px;">
+                                ✏️ Edit
+                            </button>
+                            <button onclick="deleteProduct(${product.id})" class="btn btn-danger" style="flex: 1; padding: 8px 12px; font-size: 14px;">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function updateStats(products) {
+            const productCount = products.length;
+            const categories = [...new Set(products.map(p => p.category).filter(c => c))];
+            const totalValue = products.reduce((sum, p) => sum + (parseFloat(p.price) * p.stock), 0);
+
+            document.getElementById('productCount').textContent = productCount;
+            document.getElementById('categoryCount').textContent = categories.length;
+            document.getElementById('totalValue').textContent = `${totalValue.toFixed(2)}`;
+        }
+
+        async function handleAddProduct(e) {
+            e.preventDefault();
+            const loader = document.getElementById('productLoader');
+            loader.classList.remove('hidden');
+
+            try {
+                const productData = {
+                    name: document.getElementById('productName').value,
+                    description: document.getElementById('productDescription').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    category: document.getElementById('productCategory').value,
+                    stock: parseInt(document.getElementById('productStock').value)
+                };
+
+                await axios.post(`${API_BASE}/products`, productData, {
+                    headers: { Authorization: `Bearer ${authToken}` }
+                });
+
+                showSuccess('Product added successfully! 🎉');
+                document.getElementById('productForm').reset();
+                loadProducts();
+
+            } catch (error) {
+                showError(error.response?.data?.error || 'Failed to add product');
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                await axios.delete(`${API_BASE}/products/${productId}`, {
+                    headers: { Authorization: `Bearer ${authToken}` }
+                });
+
+                showSuccess('Product deleted successfully! 🗑️');
+                loadProducts();
+
+            } catch (error) {
+                showError(error.response?.data?.error || 'Failed to delete product');
+            }
+        }
+
+        async function editProduct(productId) {
+            try {
+                // Get current product data
+                const response = await axios.get(`${API_BASE}/products/${productId}`);
+                const product = response.data;
+
+                // Fill form with current data
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productDescription').value = product.description || '';
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productCategory').value = product.category || '';
+                document.getElementById('productStock').value = product.stock;
+
+                // Change form to edit mode
+                const form = document.getElementById('productForm');
+                const submitBtn = form.querySelector('button[type="submit"]');
+                
+                submitBtn.innerHTML = `
+                    <span id="productLoader" class="loading hidden"></span>
+                    Update Product
+                `;
+                
+                // Store the product ID for update
+                form.dataset.editId = productId;
+                
+                // Change form handler
+                form.removeEventListener('submit', handleAddProduct);
+                form.addEventListener('submit', handleUpdateProduct);
+
+                // Scroll to form
+                document.getElementById('adminControls').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                showError('Failed to load product data');
+            }
+        }
+
+        async function handleUpdateProduct(e) {
+            e.preventDefault();
+            const loader = document.getElementById('productLoader');
+            loader.classList.remove('hidden');
+
+            try {
+                const form = e.target;
+                const productId = form.dataset.editId;
+                
+                const productData = {
+                    name: document.getElementById('productName').value,
+                    description: document.getElementById('productDescription').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    category: document.getElementById('productCategory').value,
+                    stock: parseInt(document.getElementById('productStock').value)
+                };
+
+                await axios.put(`${API_BASE}/products/${productId}`, productData, {
+                    headers: { Authorization: `Bearer ${authToken}` }
+                });
+
+                showSuccess('Product updated successfully! ✅');
+                
+                // Reset form to add mode
+                resetProductForm();
+                loadProducts();
+
+            } catch (error) {
+                showError(error.response?.data?.error || 'Failed to update product');
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function resetProductForm() {
+            const form = document.getElementById('productForm');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            form.reset();
+            delete form.dataset.editId;
+            
+            submitBtn.innerHTML = `
+                <span id="productLoader" class="loading hidden"></span>
+                Add Product
+            `;
+            
+            // Restore add handler
+            form.removeEventListener('submit', handleUpdateProduct);
+            form.addEventListener('submit', handleAddProduct);
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            sessionStorage.removeItem('authToken');
+            
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('userSection').classList.add('hidden');
+            document.getElementById('adminControls').classList.add('hidden');
+            
+            // Clear forms
+            document.getElementById('loginForm').reset();
+            document.getElementById('registerForm').reset();
+            
+            showSuccess('Logged out successfully! 👋');
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            container.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            showAlert(message, 'success');
+        }
+
+        function showError(message) {
+            showAlert(message, 'error');
+        }
+
+        // Add some animations
+        function animateOnScroll() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                observer.observe(card);
+            });
+        }
+
+        // Call animation function after products load
+        const originalDisplayProducts = displayProducts;
+        displayProducts = function(products) {
+            originalDisplayProducts(products);
+            setTimeout(animateOnScroll, 100);
+        };
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to quick login as admin
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                if (!authToken) {
+                    document.getElementById('loginUsername').value = 'admin';
+                    document.getElementById('loginPassword').value = 'admin123';
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                }
+            }
+            
+            // Escape to logout
+            if (e.key === 'Escape' && authToken) {
+                logout();
+            }
+        });
+
+        // Add connection status indicator
+        function checkConnection() {
+            axios.get(`${API_BASE.replace('/api', '')}/`)
+                .then(() => {
+                    document.body.style.borderTop = '3px solid #4CAF50';
+                })
+                .catch(() => {
+                    document.body.style.borderTop = '3px solid #f44336';
+                });
+        }
+
+        // Check connection every 30 seconds
+        setInterval(checkConnection, 30000);
+        checkConnection();
+
+        // Add loading states for better UX
+        axios.interceptors.request.use(config => {
+            document.body.style.cursor = 'wait';
+            return config;
+        });
+
+        axios.interceptors.response.use(
+            response => {
+                document.body.style.cursor = 'default';
+                return response;
+            },
+            error => {
+                document.body.style.cursor = 'default';
+                return Promise.reject(error);
+            }
+        );
+    </script>
+</body>
+</html>

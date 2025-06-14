@@ -1,0 +1,37 @@
+{
+  "name": "simplestore-api-tests",
+  "version": "1.0.0",
+  "description": "Comprehensive API tests for SimpleStore Node.js application",
+  "main": "simplestore-tests.js",
+  "scripts": {
+    "test": "node simplestore-tests.js",
+    "test:auth": "node -e \"const {SimpleStoreTests} = require('./simplestore-tests.js'); const tests = new SimpleStoreTests(); tests.testAuthentication();\"",
+    "test:products": "node -e \"const {SimpleStoreTests} = require('./simplestore-tests.js'); const tests = new SimpleStoreTests(); tests.testProductEndpoints();\"",
+    "test:users": "node -e \"const {SimpleStoreTests} = require('./simplestore-tests.js'); const tests = new SimpleStoreTests(); tests.testUserEndpoints();\"",
+    "test:auth-roles": "node -e \"const {SimpleStoreTests} = require('./simplestore-tests.js'); const tests = new SimpleStoreTests(); tests.testRoleBasedAuthorization();\"",
+    "test:edge-cases": "node -e \"const {SimpleStoreTests} = require('./simplestore-tests.js'); const tests = new SimpleStoreTests(); tests.testEdgeCases();\"",
+    "test:performance": "node -e \"const {SimpleStoreTests} = require('./simplestore-tests.js'); const tests = new SimpleStoreTests(); tests.testPerformance();\"",
+    "test:full": "npm test"
+  },
+  "keywords": [
+    "api",
+    "testing",
+    "node.js",
+    "express",
+    "jwt",
+    "authentication",
+    "authorization",
+    "axios"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
