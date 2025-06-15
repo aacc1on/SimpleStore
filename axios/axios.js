@@ -182,7 +182,7 @@ async function testUpdateProduct() {
 
 async function testGetUserProfile() {
   try {
-    const response = await axios.get(`${BASE_URL}/users/profile`, {
+    const response = await axios.get(`${BASE_URL}/users/1`, {
       headers: {
         'Authorization': `Bearer ${authToken}`
       }
